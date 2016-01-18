@@ -23,8 +23,7 @@ CREATE TABLE players (id SERIAL PRIMARY KEY, name TEXT, wins INTEGER,
 -- Create the matches table
 
 CREATE TABLE matches (playerA INTEGER REFERENCES players(id), playerB INTEGER 
-	REFERENCES players(id), winner INTEGER REFERENCES players(id), 
-	loser INTEGER REFERENCES players(id), PRIMARY KEY (playerA, playerB));
+	REFERENCES players(id), PRIMARY KEY (playerA, playerB));
                                     
 
 
