@@ -51,8 +51,7 @@ def registerPlayer(name):
     """
     db = connect()
     c = db.cursor()
-    c.execute("INSERT INTO players (name, wins, losses, matches) VALUES       \
-        (%s, 0, 0, 0);", (bleach.clean(name),))
+    c.execute("INSERT INTO players (name) VALUES (%s);", (bleach.clean(name),))
     db.commit()
     db.close()
 
@@ -72,7 +71,10 @@ def playerStandings():
     """
     db = connect()
     c = db.cursor()
-    c.execute("SELECT id, name, wins, matches FROM players ORDER BY wins;")
+    c.execute("SELECT winstable.id, winstable.name, winstable.wins,           \
+        winstable.wins + losestable.loses as matches from winstable,          \
+        losestable where winstable.id = losestable.id order by winstable.wins \
+        ;")
     rows = c.fetchall()
     db.close()
     return rows
@@ -87,10 +89,8 @@ def reportMatch(winner, loser):
     """
     db = connect()
     c = db.cursor()
-    c.execute("UPDATE players SET wins = wins + 1, matches = matches + 1 WHERE \
-        id = %s;", (bleach.clean(winner),))
-    c.execute("UPDATE players SET losses = losses + 1, matches = matches + 1   \
-        WHERE id = %s;", (bleach.clean(loser),))
+    c.execute("INSERT INTO matches values (%s, %s);", (bleach.clean(winner),
+              bleach.clean(loser),))
     db.commit()
     db.close()
 
@@ -112,7 +112,7 @@ def swissPairings():
     """
     db = connect()
     c = db.cursor()
-    c.execute("SELECT id, name FROM players ORDER BY wins;")
+    c.execute("SELECT id, name FROM winstable ORDER BY wins;")
     rows = c.fetchall()
     listpairs = []
     pair = []
